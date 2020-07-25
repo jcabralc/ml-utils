@@ -1,3 +1,4 @@
+# Testar se uma serie e estacionaria
 def testa_estacionaridade(serie):
     
     ### Calcula estatísticas móveis ### 
@@ -52,6 +53,7 @@ def testa_estacionaridade(serie):
         print('\nO valor-p é menor que 0.05 e, portanto, temos evidências para rejeitar a hipótese nula.')
         print('Essa série provavelmente é estacionária.')
 
+# fazer a decomposicao de uma serie temporal
 def decomposicao_serie(serie):
     # Multiplicative Decomposition 
     decomposicao_multiplicativa = sm.tsa.seasonal_decompose(serie, model = 'multiplicative', 
@@ -67,3 +69,41 @@ def decomposicao_serie(serie):
     decomposicao_multiplicativa.plot().suptitle('Decomposição Multiplicativa', fontsize = 22)
     decomposicao_aditiva.plot().suptitle('Decomposição Aditiva', fontsize = 22)
     plt.show()
+
+# aplicar diferenciação em uma serie temporal
+# interval representa o intervalo para calcular a diferenciação
+def diffFunc(dataset, interval = 1):
+    diff = list()
+    for i in range(interval, len(dataset)):
+        value = dataset[i] - dataset[i - interval]
+        diff.append(value)
+    return diff
+
+# diagnósticos de dados de serie temporal
+# função com Plots ACF e PACF, além dos resíduos
+def tsplot(y, lags = None, figsize = (12, 8), style = 'bmh'):
+    
+    # Se a série não for do tipo pd.Series, fazemos a conversão
+    if not isinstance(y, pd.Series):
+        y = pd.Series(y)
+    
+    # Criamos os plots
+    with plt.style.context(style):    
+        fig = plt.figure(figsize = figsize)
+        layout = (3, 2)
+        ts_ax = plt.subplot2grid(layout, (0, 0), colspan = 2)
+        acf_ax = plt.subplot2grid(layout, (1, 0))
+        pacf_ax = plt.subplot2grid(layout, (1, 1))
+        qq_ax = plt.subplot2grid(layout, (2, 0))
+        pp_ax = plt.subplot2grid(layout, (2, 1))
+        
+        y.plot(ax = ts_ax)
+        ts_ax.set_title('Plots Para Análise de Séries Temporais')
+        smt.graphics.plot_acf(y, lags = lags, ax = acf_ax, alpha = 0.05)
+        smt.graphics.plot_pacf(y, lags = lags, ax = pacf_ax, alpha = 0.05)
+        sm.qqplot(y, line = 's', ax = qq_ax)
+        qq_ax.set_title('QQ Plot')        
+        scs.probplot(y, sparams = (y.mean(), y.std()), plot = pp_ax)
+
+        plt.tight_layout()
+    return
