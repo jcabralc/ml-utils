@@ -55,12 +55,16 @@ def testa_estacionaridade(serie):
 
 # fazer a decomposicao de uma serie temporal
 def decomposicao_serie(serie):
+
+    import statsmodels.api as sm
+    from statsmodels.tsa.seasonal import seasonal_decompose
+
     # Multiplicative Decomposition 
-    decomposicao_multiplicativa = sm.tsa.seasonal_decompose(serie, model = 'multiplicative', 
+    decomposicao_multiplicativa = seasonal_decompose(serie, model = 'multiplicative', 
                                                             extrapolate_trend = 'freq')
 
     # Additive Decomposition
-    decomposicao_aditiva = sm.tsa.seasonal_decompose(serie, model = 'aditive', 
+    decomposicao_aditiva = seasonal_decompose(serie, model = 'aditive', 
                                                      extrapolate_trend = 'freq')
     # Definir extrapolate_trend = 'freq' cuida de todos os valores ausentes na tendência e nos 
     # resíduos no início da série (se existirem).
@@ -83,6 +87,9 @@ def diffFunc(dataset, interval = 1):
 # função com Plots ACF e PACF, além dos resíduos
 def tsplot(y, lags = None, figsize = (12, 8), style = 'bmh'):
     
+    from statsmodels.graphics.tsaplots import plot_acf
+    from statsmodels.graphics.tsaplots import plot_pacf
+
     # Se a série não for do tipo pd.Series, fazemos a conversão
     if not isinstance(y, pd.Series):
         y = pd.Series(y)
